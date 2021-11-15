@@ -129,8 +129,9 @@ dmypy.json
 .pyre/
 
 # Detectron2
-./detectron2-windows
+./detectron2-windows/
 
 # etc
-./etc
-./AttentionVector/prelim
+./etc/
+./AttentionVector/prelim/
+./AttentionVector/src/output/events*
