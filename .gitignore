@@ -134,5 +134,5 @@ detectron2-windows/
 # etc
 etc/
 AttentionVector/prelim/
-AttentionVector/src/output/events*
+AttentionVector/src/output/**/*.0
 AttentionVector/.idea/
