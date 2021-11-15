@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Detectron2
+./detectron2-windows
+
+# etc
+./ etc
