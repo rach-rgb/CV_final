@@ -135,3 +135,4 @@ dmypy.json
 ./etc/
 ./AttentionVector/prelim/
 ./AttentionVector/src/output/events*
+./AttentionVector/.idea/
