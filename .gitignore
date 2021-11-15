@@ -132,4 +132,5 @@ dmypy.json
 ./detectron2-windows
 
 # etc
-./ etc
+./etc
+./AttentionVector/prelim
