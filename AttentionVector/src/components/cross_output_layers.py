@@ -1,9 +1,10 @@
-from detectron2.modeling.roi_heads.fast_rcnn import FastRCNNOutputLayers
-from cross_net import CrossNet
 import torch
-from detectron2.layers import ShapeSpec
 from typing import Dict, Union
+from detectron2.layers import ShapeSpec
 from detectron2.config import configurable
+from detectron2.modeling.roi_heads.fast_rcnn import FastRCNNOutputLayers
+
+from cross_net import CrossNet
 
 
 class CrossOutputLayer(FastRCNNOutputLayers):
@@ -23,6 +24,6 @@ class CrossOutputLayer(FastRCNNOutputLayers):
         if x.dim() > 2:
             x = torch.flatten(x, start_dim=1)
         scores = self.cls_score(x)
-        scores = self.cross_net(scores)
+        scores = scores * self.cross_net(scores)
         proposal_deltas = self.bbox_pred(x)
         return scores, proposal_deltas

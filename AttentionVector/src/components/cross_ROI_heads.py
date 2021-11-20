@@ -1,7 +1,8 @@
-from detectron2.modeling import ROI_HEADS_REGISTRY, StandardROIHeads
-from cross_output_layers import CrossOutputLayer
-from detectron2.modeling.roi_heads.box_head import build_box_head
 from detectron2.layers import ShapeSpec
+from detectron2.modeling.roi_heads.box_head import build_box_head
+from detectron2.modeling import ROI_HEADS_REGISTRY, StandardROIHeads
+
+from cross_output_layers import CrossOutputLayer
 
 
 @ROI_HEADS_REGISTRY.register()
