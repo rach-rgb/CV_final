@@ -8,18 +8,40 @@ from cross_output_layers import CrossOutputLayer
 @ROI_HEADS_REGISTRY.register()
 class CrossROIHeads(StandardROIHeads):
     def __init__(self, cfg, input_shape):
+        super().__init__(cfg, input_shape, box_predictor=CrossOutputLayer(cfg, self.predictor_input_shape(cfg, input_shape)))
+
+    # calculate input shape of box_predictor
+    # parameters: input_shape - input shape for RoI Heads
+    def predictor_input_shape(self, cfg, input_shape):
         # build input_shape of box_predictor
         in_features = cfg.MODEL.ROI_HEADS.IN_FEATURES
-        pooler_resolution = cfg.MODEL.ROI_BOX_HEAD.POOLER_RESOLUTION
         in_channels = [input_shape[f].channels for f in in_features]
         # Check all channel counts are equal
         assert len(set(in_channels)) == 1, in_channels
-        in_channels = in_channels[0]
+        pooler_resolution = cfg.MODEL.ROI_BOX_HEAD.POOLER_RESOLUTION
 
-        box_head = build_box_head(cfg,
-                                  ShapeSpec(channels=in_channels, height=pooler_resolution, width=pooler_resolution))
+        # box_head output size
+        head_output = (in_channels[0], pooler_resolution, pooler_resolution)
 
-        super().__init__(cfg, input_shape, box_predictor=CrossOutputLayer(cfg, box_head.output_shape))
+        num_conv = cfg.MODEL.ROI_BOX_HEAD.NUM_CONV
+        conv_dim = cfg.MODEL.ROI_BOX_HEAD.CONV_DIM
+        num_fc = cfg.MODEL.ROI_BOX_HEAD.NUM_FC
+        fc_dim = cfg.MODEL.ROI_BOX_HEAD.FC_DIM
 
+        dict_head = {
+            "conv_dims": [conv_dim] * num_conv,
+            "fc_dims": [fc_dim] * num_fc,
+        }
 
+        for k, conv_dim in enumerate(dict_head['conv_dims']):
+            head_output = (conv_dim, head_output[1], head_output[2])
+
+        for k, fc_dim in enumerate(dict_head['fc_dims']):
+            head_output = fc_dim
+
+        o = head_output
+        if isinstance(o, int):
+            return ShapeSpec(channels=o)
+        else:
+            return ShapeSpec(channels=o[0], height=o[1], width=o[2])
 

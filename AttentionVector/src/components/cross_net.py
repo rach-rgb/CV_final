@@ -3,7 +3,7 @@ from torch import nn
 
 
 class CrossNet(nn.Module):
-    def __init__(self):
+    def __init__(self, num_classes):
         super(CrossNet, self).__init__()
         # self.rel = torch.ones(4, 4)  # get relevance matrix (prior knowledge or train?)
         #

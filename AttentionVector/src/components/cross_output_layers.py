@@ -18,7 +18,7 @@ class CrossOutputLayer(FastRCNNOutputLayers):
                          test_score_thresh=test_score_thresh, test_nms_thresh=test_nms_thresh,
                          test_topk_per_image=test_topk_per_image, cls_agnostic_bbox_reg=cls_agnostic_bbox_reg,
                          smooth_l1_beta=smooth_l1_beta, box_reg_loss_type=box_reg_loss_type, loss_weight=loss_weight)
-        self.cross_net = CrossNet()
+        self.cross_net = CrossNet(num_classes)
 
     def forward(self, x):
         if x.dim() > 2:
