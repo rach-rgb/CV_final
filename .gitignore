@@ -132,7 +132,10 @@ dmypy.json
 detectron2-windows/
 
 # etc
+.idea/
 etc/
 AttentionVector/prelim/
 AttentionVector/src/output/
+AttentionVector/src/datasets/
+AttentionVector/src/output.yaml
 AttentionVector/.idea/
