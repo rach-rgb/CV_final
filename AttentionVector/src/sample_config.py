@@ -11,10 +11,10 @@ def run(use_cfg=True, save_cfg=True, use_weight=False):
     # use custom cfg
     if use_cfg:
         cfg.merge_from_file('output.yaml')
-    else:  # use baseline cfg
+    else:  # build cfg from baseline
         cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml"))
         cfg.MODEL.ROI_HEADS.NAME = 'CrossROIHeads'
-        cfg.SOLVER.IMS_PER_BATCH = 4
+        cfg.SOLVER.IMS_PER_BATCH = 2
 
     # use custom weight
     if use_weight:

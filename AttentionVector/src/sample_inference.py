@@ -27,5 +27,5 @@ def run(cfg):
 
 
 if __name__ == '__main__':
-    _cfg = sample_config.run(True)
+    _cfg = sample_config.run()
     run(_cfg)
