@@ -1,18 +1,20 @@
 import torch
-import sample_config
-import sample_train
-import sample_inference
+from detectron2.config import get_cfg
+
+from val_hook import GCHook
+from partial_trainer import PartialTrainer
+from components.cross_ROI_heads import CrossROIHeads
 
 
 def run():
-    # config
-    cfg = sample_config.run()
+    cfg = get_cfg()
+    cfg.merge_from_file('output.yaml')
 
     # train
-    sample_train.run(cfg)
-
-    # print('inference')
-    # pre = sample_inference.run(cfg, balloon_meta, True)
+    trainer = PartialTrainer(cfg)
+    trainer.resume_or_load(resume=False)
+    trainer.register_hooks([GCHook()])
+    trainer.train()
 
 
 if __name__ == "__main__":
