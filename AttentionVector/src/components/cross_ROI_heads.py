@@ -1,4 +1,7 @@
+import torch
+from typing import Dict, List, Union
 from detectron2.layers import ShapeSpec
+from detectron2.structures import Instances
 from detectron2.modeling.roi_heads.box_head import build_box_head
 from detectron2.modeling import ROI_HEADS_REGISTRY, StandardROIHeads
 
@@ -45,3 +48,7 @@ class CrossROIHeads(StandardROIHeads):
         else:
             return ShapeSpec(channels=o[0], height=o[1], width=o[2])
 
+    def _forward_box(self, features: Dict[str, torch.Tensor], proposals: List[Instances]):
+        num_instances = [len(x.proposal_boxes) for x in proposals]
+        self.box_predictor.cross_net.pass_hint(num_instances)
+        return super()._forward_box(features, proposals)

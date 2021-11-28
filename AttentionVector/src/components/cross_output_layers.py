@@ -12,19 +12,13 @@ class CrossOutputLayer(FastRCNNOutputLayers):
     def __init__(self, input_shape: ShapeSpec, *, box2box_transform, num_classes: int, test_score_thresh: float = 0.0,
                  test_nms_thresh: float = 0.5, test_topk_per_image: int = 100, cls_agnostic_bbox_reg: bool = False,
                  smooth_l1_beta: float = 0.0, box_reg_loss_type: str = "smooth_l1",
-                 loss_weight: Union[float, Dict[str, float]] = 1.0, roi_batch: int = 100):
+                 loss_weight: Union[float, Dict[str, float]] = 1.0):
 
         super().__init__(input_shape, box2box_transform=box2box_transform, num_classes=num_classes,
                          test_score_thresh=test_score_thresh, test_nms_thresh=test_nms_thresh,
                          test_topk_per_image=test_topk_per_image, cls_agnostic_bbox_reg=cls_agnostic_bbox_reg,
                          smooth_l1_beta=smooth_l1_beta, box_reg_loss_type=box_reg_loss_type, loss_weight=loss_weight)
-        self.cross_net = CrossNet(num_classes, roi_batch)
-
-    @classmethod
-    def from_config(cls, cfg, input_shape):
-        cfg_dict = super().from_config(cfg, input_shape)
-        cfg_dict["roi_batch"] = cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE
-        return cfg_dict
+        self.cross_net = CrossNet(num_classes)
 
     def forward(self, x):
         if x.dim() > 2:
