@@ -8,9 +8,17 @@ from components.cross_ROI_heads import CrossROIHeads
 if __name__ == "__main__":
     cfg = get_cfg()
 
+    total = 41000
+    batch = 2
+    epoch = 3
+
     cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml"))
     cfg.MODEL.ROI_HEADS.NAME = 'CrossROIHeads'
     cfg.SOLVER.IMS_PER_BATCH = 2
+    cfg.SOLVER.BASE_LR = cfg.SOLVER.BASE_LR/10
+    cfg.SOLVER.MAX_ITER = int(total / batch * epoch)
+    cfg.SOLVER.CHECKPOINT_PERIOD = int(cfg.SOLVER.MAX_ITER / 10)
+    cfg.TEST.EVAL_PERIOD = int(cfg.SOLVER.MAX_ITER / 10)
     cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml")
 
     with open('output.yaml', 'w') as f:
