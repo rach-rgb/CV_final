@@ -2,7 +2,7 @@ import torch
 from detectron2.config import get_cfg
 
 from val_hook import GCHook
-from partial_trainer import PartialTrainer
+from relevance_trainer import RelTrainer
 from components.cross_ROI_heads import CrossROIHeads
 
 
@@ -11,7 +11,7 @@ def run():
     cfg.merge_from_file('output.yaml')
 
     # train
-    trainer = PartialTrainer(cfg)
+    trainer = RelTrainer(cfg)
     trainer.resume_or_load(resume=False)
     trainer.register_hooks([GCHook()])
     trainer.train()

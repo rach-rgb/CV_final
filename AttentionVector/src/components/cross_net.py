@@ -7,8 +7,9 @@ import torch.nn.functional as F
 class CrossNet(nn.Module):
     def __init__(self, num_classes, d_k=64):
         super(CrossNet, self).__init__()
-        self.prior_rel = None
         self.num_instances = None
+
+        self.prior_rel = nn.Parameter(torch.zeros(81, 81), requires_grad=False)
 
         # single-head self attention
         self.query_fc = nn.Linear(num_classes+1, d_k)
@@ -19,7 +20,7 @@ class CrossNet(nn.Module):
         self.unpack_fc = nn.Linear(d_k, num_classes+1)
 
     def set_rel(self, rel):
-        self.prior_rel = rel
+        self.prior_rel.data = rel
 
     def pass_hint(self, num_instances):
         self.num_instances = num_instances
