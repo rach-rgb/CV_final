@@ -1,12 +1,15 @@
-import os, cv2
+import os, cv2, torch
+from detectron2.config import get_cfg
 from detectron2.data import MetadataCatalog
 from detectron2.engine import DefaultPredictor
 from detectron2.utils.visualizer import Visualizer
 
-import sample_config
+from components.cross_ROI_heads import CrossROIHeads
 
 
-def run(cfg):
+def run():
+    cfg = get_cfg()
+    cfg.merge_from_file('output.yaml')
     cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
 
     im = cv2.imread("./input.png")
@@ -27,5 +30,5 @@ def run(cfg):
 
 
 if __name__ == '__main__':
-    _cfg = sample_config.run()
-    run(_cfg)
+    torch.multiprocessing.freeze_support()
+    run()

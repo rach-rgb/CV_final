@@ -1,7 +1,6 @@
 import torch
 from detectron2.config import get_cfg
 
-from val_hook import GCHook
 from relevance_trainer import RelTrainer
 from components.cross_ROI_heads import CrossROIHeads
 
@@ -13,7 +12,6 @@ def run():
     # train
     trainer = RelTrainer(cfg)
     trainer.resume_or_load(resume=False)
-    trainer.register_hooks([GCHook()])
     trainer.train()
 
 
