@@ -1,4 +1,5 @@
 import os
+from torch import nn
 from val_hook import GCHook, LossEvalHook
 from rel_data_loader import get_rel_classes
 from detectron2.engine import DefaultTrainer
@@ -14,7 +15,7 @@ class RelTrainer(DefaultTrainer):
         model = super().build_model(cfg)
 
         # build relevance matrix from train data
-        if model.roi_heads.box_predictor.cross_net.prior_rel is None:
+        if model.roi_heads.box_predictor.cross_net.prior_rel[0][1] == 0:
             rel = get_rel_classes(cfg)
             model.roi_heads.box_predictor.cross_net.set_rel(rel)
 
@@ -48,3 +49,8 @@ class RelTrainer(DefaultTrainer):
         hooks.insert(-1, GCHook(self.cfg.TEST.EVAL_PERIOD))
 
         return hooks
+
+    def resume_or_load(self, resume=True):
+        super().resume_or_load(resume)
+        if not resume:  # load
+            nn.init.normal_(self.model.roi_heads.box_predictor.cls_score.weight, std=0.01)
