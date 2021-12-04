@@ -2,7 +2,7 @@ import torch
 from typing import Dict, Union
 from detectron2.layers import ShapeSpec
 from detectron2.config import configurable
-from detectron2.modeling.roi_heads.fast_rcnn import FastRCNNOutputLayers
+from detectron2.modeling import FastRCNNOutputLayers
 
 from cross_net import CrossNet
 

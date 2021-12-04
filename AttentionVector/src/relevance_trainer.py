@@ -1,15 +1,15 @@
 import os
 from torch import nn
-from val_hook import GCHook, LossEvalHook
-from rel_data_loader import get_rel_classes
 from detectron2.engine import DefaultTrainer
 from detectron2.evaluation import COCOEvaluator
-
 from detectron2.data import DatasetMapper, build_detection_test_loader
+
+from hooks import GCHook, LossEvalHook
+from relevance_loader import get_rel_classes
 
 
 # Custom Trainer
-class RelTrainer(DefaultTrainer):
+class RelevanceTrainer(DefaultTrainer):
     @classmethod
     def build_model(cls, cfg):
         model = super().build_model(cfg)
@@ -44,7 +44,8 @@ class RelTrainer(DefaultTrainer):
                 self.cfg,
                 self.cfg.DATASETS.TEST[0],
                 DatasetMapper(self.cfg, True)
-            )
+            ),
+            50
         ))
         hooks.insert(-1, GCHook(self.cfg.TEST.EVAL_PERIOD))
 

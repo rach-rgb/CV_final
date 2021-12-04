@@ -1,8 +1,7 @@
 import torch
-from typing import Dict, List, Union
+from typing import Dict, List
 from detectron2.layers import ShapeSpec
 from detectron2.structures import Instances
-from detectron2.modeling.roi_heads.box_head import build_box_head
 from detectron2.modeling import ROI_HEADS_REGISTRY, StandardROIHeads
 
 from cross_output_layers import CrossOutputLayer
@@ -11,7 +10,8 @@ from cross_output_layers import CrossOutputLayer
 @ROI_HEADS_REGISTRY.register()
 class CrossROIHeads(StandardROIHeads):
     def __init__(self, cfg, input_shape):
-        super().__init__(cfg, input_shape, box_predictor=CrossOutputLayer(cfg, self.predictor_input_shape(cfg, input_shape)))
+        super().__init__(cfg, input_shape,
+                         box_predictor=CrossOutputLayer(cfg, self.predictor_input_shape(cfg, input_shape)))
 
     # calculate input shape of box_predictor
     # parameters: input_shape - input shape for RoI Heads
