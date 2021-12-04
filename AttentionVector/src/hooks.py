@@ -2,8 +2,14 @@ import logging
 import numpy as np
 import gc, torch, time, datetime
 import detectron2.utils.comm as comm
+from detectron2.data import get_detection_dataset_dicts, DatasetFromList
+from detectron2.data.build import trivial_batch_collator
+from detectron2.data.samplers import InferenceSampler
 from detectron2.engine.hooks import HookBase
 from detectron2.utils.logger import log_every_n_seconds
+from detectron2.data.common import DatasetFromList, MapDataset
+from detectron2.data.dataset_mapper import DatasetMapper
+from itertools import cycle
 
 
 # Cuda Garbage Collection
@@ -20,22 +26,26 @@ class GCHook(HookBase):
 # Validation Hook
 # source: https://gist.github.com/ortegatron/c0dad15e49c2b74de8bb09a5615d9f6b#file-lossevalhook-py
 class LossEvalHook(HookBase):
-    def __init__(self, eval_period, model, data_loader):
+    def __init__(self, eval_period, model, data_loader, size):
         self._model = model
         self._period = eval_period
         self._data_loader = data_loader
+        self._iter = cycle(self._data_loader)
+        self._size = size
 
     def _do_loss_eval(self):
         # Copying inference_on_dataset from evaluator.py
-        total = int(len(self._data_loader) / 100)
+        total = len(self._data_loader)
         num_warmup = min(5, total - 1)
 
         start_time = time.perf_counter()
         total_compute_time = 0
         losses = []
-        for idx, inputs in enumerate(self._data_loader):
-            if idx == total:
-                break
+
+        # for idx, inputs in enumerate(self._data_loader):
+        for idx in range(0, self._size):
+            inputs = next(self._iter)
+
             if idx == num_warmup:
                 start_time = time.perf_counter()
                 total_compute_time = 0
