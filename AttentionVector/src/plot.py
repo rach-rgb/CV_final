@@ -25,6 +25,17 @@ def run():
     plt.legend(['total_loss', 'validation_loss'], loc='upper left')
     plt.show()
 
+    experiment_metrics.reverse()
+    for value in experiment_metrics:
+        if 'total_loss' in value:
+            print(value['iteration'], value['total_loss'])
+            break
+
+    for value in experiment_metrics:
+        if 'validation_loss' in value:
+            print(value['iteration'], value['validation_loss'])
+            break
+
 
 if __name__ == '__main__':
     run()

@@ -7,6 +7,7 @@ from detectron2.engine import DefaultPredictor
 from detectron2.utils.visualizer import Visualizer
 
 from components.cross_ROI_heads import CrossROIHeads
+from components.counter_ROI_heads import CounterROIHeads
 
 
 def run():

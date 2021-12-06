@@ -62,4 +62,6 @@ def get_rel_classes(cfg):
 
     del appearance
 
+    print("relevance information generated")
+
     return pair_appearance
