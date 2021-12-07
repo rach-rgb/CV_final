@@ -7,6 +7,7 @@ class CrossNet(nn.Module):
     def __init__(self, num_classes, d_k=64):
         super(CrossNet, self).__init__()
         self.num_instances = None
+        self._track = False
 
         self.prior_rel = nn.Parameter(torch.zeros(81, 81), requires_grad=False)
 
@@ -23,6 +24,9 @@ class CrossNet(nn.Module):
 
     def pass_hint(self, num_instances):
         self.num_instances = num_instances
+
+    def track(self, _track):
+        self._track = _track
 
     def forward(self, x):
         out = torch.split(x, self.num_instances)
@@ -41,6 +45,14 @@ class CrossNet(nn.Module):
 
         out = F.softmax(out, dim=2)
 
+        if self._track:
+            print('Input')
+            print(x)
+            print('Attention')
+            print(out)
+            print('Conditional Probability')
+            print(v)
+
         # relevance based value
         out = torch.matmul(out, v)
 
@@ -50,5 +62,9 @@ class CrossNet(nn.Module):
         out = out.view(-1, out.size(2))
         d = max(self.num_instances)
         out = torch.cat([out[d*y: d*y+self.num_instances[y]] for y in range(0, len(self.num_instances))])
+
+        if self._track:
+            print('result')
+            print(out)
 
         return out

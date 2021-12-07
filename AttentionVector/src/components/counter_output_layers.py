@@ -26,7 +26,7 @@ class CounterOutputLayer(FastRCNNOutputLayers):
         if x.dim() > 2:
             x = torch.flatten(x, start_dim=1)
         scores = self.cls_score(x)
-        y = self.fc1(x)
+        y = self.fc1(scores)
         y = F.sigmoid(self.fc2(y))
         scores = y * scores
 
