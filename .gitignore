@@ -140,3 +140,4 @@ AttentionVector/src/datasets/
 AttentionVector/src/output.yaml
 AttentionVector/.idea/
 AttentionVector/src/sample_*
+AttentionVector/src/sample/
