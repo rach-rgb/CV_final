@@ -4,20 +4,15 @@ from detectron2.engine import DefaultTrainer
 from detectron2.evaluation import COCOEvaluator
 from detectron2.data import DatasetMapper, build_detection_test_loader
 
-from hooks import GCHook, LossEvalHook
+from validate_hook import LossEvalHook
 from relevance_loader import get_rel_classes
 
 
-# Custom Trainer
-class RelevanceTrainer(DefaultTrainer):
+# Trainer for fine tune
+class TuningTrainer(DefaultTrainer):
     @classmethod
     def build_model(cls, cfg):
         model = super().build_model(cfg)
-
-        # build relevance matrix from train data
-        if model.roi_heads.box_predictor.cross_net.prior_rel[0][1] == 0:
-            rel = get_rel_classes(cfg)
-            model.roi_heads.box_predictor.cross_net.set_rel(rel)
 
         # freeze backbone and proposal net
         for param in model.backbone.parameters():
@@ -47,11 +42,39 @@ class RelevanceTrainer(DefaultTrainer):
             ),
             50
         ))
-        hooks.insert(-1, GCHook(self.cfg.TEST.EVAL_PERIOD))
 
         return hooks
 
-    def resume_or_load(self, resume=True):
+    def resume_or_load(self, resume=True, remove_all=False):
         super().resume_or_load(resume)
-        if not resume:  # load
+        if not resume:  # initialize cls_score again if weight are loaded from cfg
+            # cls_score
             nn.init.normal_(self.model.roi_heads.box_predictor.cls_score.weight, std=0.01)
+
+            if remove_all:  # initialize box_head and bbox_pred
+                # box_head
+                nn.init.normal_(self.model.roi_heads.box_head.fc1.weight, std=0.01)
+                nn.init.normal_(self.model.roi_heads.box_head.fc2.weight, std=0.01)
+                # bbox_pred
+                nn.init.normal_(self.model.roi_heads.box_predictor.bbox_pred.weight, std=0.01)
+
+
+# Custom Trainer
+class RelevanceTrainer(TuningTrainer):
+    @classmethod
+    def build_model(cls, cfg):
+        model = super().build_model(cfg)
+
+        # build relevance matrix from train data
+        if model.roi_heads.box_predictor.cross_net.prior_rel[0][1] == 0:
+            rel = get_rel_classes(cfg)
+            model.roi_heads.box_predictor.cross_net.set_rel(rel)
+
+        # freeze backbone and proposal net
+        for param in model.backbone.parameters():
+            param.requires_grad = False
+        for param in model.proposal_generator.parameters():
+            param.requires_grad = False
+
+        return model
+
