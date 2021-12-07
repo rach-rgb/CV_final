@@ -2,7 +2,7 @@
 import json
 import matplotlib.pyplot as plt
 
-experiment_folder = './output'
+experiment_folder = '../output'
 
 
 def load_json_arr(json_path):

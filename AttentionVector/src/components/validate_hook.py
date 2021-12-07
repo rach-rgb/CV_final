@@ -1,26 +1,9 @@
-import logging
 import numpy as np
-import gc, torch, time, datetime
-import detectron2.utils.comm as comm
-from detectron2.data import get_detection_dataset_dicts, DatasetFromList
-from detectron2.data.build import trivial_batch_collator
-from detectron2.data.samplers import InferenceSampler
-from detectron2.engine.hooks import HookBase
-from detectron2.utils.logger import log_every_n_seconds
-from detectron2.data.common import DatasetFromList, MapDataset
-from detectron2.data.dataset_mapper import DatasetMapper
 from itertools import cycle
-
-
-# Cuda Garbage Collection
-class GCHook(HookBase):
-    def __init__(self, collect_period):
-        self._period = collect_period
-
-    def after_step(self):
-        if self.trainer.iter % self._period == 0:
-            gc.collect()
-            torch.cuda.empty_cache()
+import torch, time, datetime, logging
+import detectron2.utils.comm as comm
+from detectron2.engine import HookBase
+from detectron2.utils.logger import log_every_n_seconds
 
 
 # Validation Hook
