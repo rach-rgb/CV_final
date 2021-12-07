@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from typing import Dict, Union
+import torch.nn.functional as F
 from detectron2.layers import ShapeSpec
 from detectron2.config import configurable
 from detectron2.modeling import FastRCNNOutputLayers
@@ -25,9 +26,9 @@ class CounterOutputLayer(FastRCNNOutputLayers):
         if x.dim() > 2:
             x = torch.flatten(x, start_dim=1)
         scores = self.cls_score(x)
-        scores = self.fc1(scores)
-        scores = self.fc2(scores)
-        scores = torch.sigmoid(scores)
+        y = self.fc1(x)
+        y = F.sigmoid(self.fc2(y))
+        scores = y * scores
 
         proposal_deltas = self.bbox_pred(x)
         return scores, proposal_deltas
