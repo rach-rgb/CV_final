@@ -2,7 +2,7 @@
 import json
 import matplotlib.pyplot as plt
 
-experiment_folder = '../output'
+input_path = '../output'
 
 
 def load_json_arr(json_path):
@@ -14,7 +14,7 @@ def load_json_arr(json_path):
 
 
 def run():
-    experiment_metrics = load_json_arr(experiment_folder + '/metrics.json')
+    experiment_metrics = load_json_arr(input_path + '/metrics.json')
 
     plt.plot(
         [x['iteration'] for x in experiment_metrics if 'total_loss' in x],
