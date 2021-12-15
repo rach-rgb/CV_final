@@ -1,16 +1,14 @@
-import os, copy, sys
+import os, copy
 import pandas as pd
 from detectron2.config import get_cfg
 from detectron2.utils.logger import setup_logger
 from detectron2.engine import DefaultPredictor
 from detectron2.evaluation import COCOEvaluator, inference_on_dataset
 from detectron2.data import build_detection_test_loader
+setup_logger()
 
-from cross_ROI_heads import CrossROIHeads
-from counter_ROI_heads import CounterROIHeads
-
-input_path = './output/'
-result_path = './output/AP.csv'
+from rav_ROI_heads import RAVROIHeads
+from components.counter_ROI_heads import CounterROIHeads
 
 metrics = ['AP', 'AP50', 'AP75', 'APs', 'APm', 'APl', 'AP-person', 'AP-bicycle', 'AP-car', 'AP-motorcycle',
            'AP-airplane', 'AP-bus', 'AP-train', 'AP-truck', 'AP-boat', 'AP-traffic light', 'AP-fire hydrant',
@@ -24,11 +22,9 @@ metrics = ['AP', 'AP50', 'AP75', 'APs', 'APm', 'APl', 'AP-person', 'AP-bicycle',
            'AP-laptop', 'AP-mouse', 'AP-remote', 'AP-keyboard', 'AP-cell phone', 'AP-microwave', 'AP-oven',
            'AP-toaster', 'AP-sink', 'AP-refrigerator', 'AP-book', 'AP-clock', 'AP-vase', 'AP-scissors',
            'AP-teddy bear', 'AP-hair drier', 'AP-toothbrush']
-result_dict = {}
-
-setup_logger()
 
 
+# evaluate bbox AP for metrics
 def run(model_name):
     cfg = get_cfg()
     cfg.merge_from_file(input_path + model_name + '/output.yaml')
@@ -39,16 +35,21 @@ def run(model_name):
     val_loader = build_detection_test_loader(cfg, "coco_2017_val")
 
     result = inference_on_dataset(predictor.model, val_loader, evaluator)
-    result_dict[model_name] = copy.deepcopy(result['bbox'])
+    result_dict[model_name+' soft'] = copy.deepcopy(result['bbox'])
 
 
 if __name__ == "__main__":
     os.chdir('../')
+    input_path = './output/'
+    result_path = './output/AP.csv'
 
+    result_dict = {}
     result_df = pd.read_csv(result_path, index_col=0).transpose()
     result_dict.update(result_df.to_dict())
 
-    run('baseline_counter')
+    run('rav_net_64')
+
+    # save AP as dataframe
     result_df = pd.DataFrame.from_dict(result_dict, orient='index', columns=metrics)
 
     result_df.to_csv(result_path)

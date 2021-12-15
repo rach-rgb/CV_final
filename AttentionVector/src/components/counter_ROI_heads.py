@@ -8,13 +8,14 @@ from counter_output_layers import CounterOutputLayer
 
 
 @ROI_HEADS_REGISTRY.register()
+# RoI head with counter part of RAVNet
 class CounterROIHeads(StandardROIHeads):
     def __init__(self, cfg, input_shape):
         super().__init__(cfg, input_shape,
                          box_predictor=CounterOutputLayer(cfg, self.predictor_input_shape(cfg, input_shape)))
 
     # calculate input shape of box_predictor
-    # parameters: input_shape - input shape for RoI Heads
+    # params - input_shape: input shape for RoIHeads
     def predictor_input_shape(self, cfg, input_shape):
         # build input_shape of box_predictor
         in_features = cfg.MODEL.ROI_HEADS.IN_FEATURES

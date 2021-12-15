@@ -7,6 +7,7 @@ from detectron2.modeling import ROI_HEADS_REGISTRY, StandardROIHeads
 from rav_output_layers import RAVOutputLayer
 
 
+# RoI Head with RAVNet
 @ROI_HEADS_REGISTRY.register()
 class RAVROIHeads(StandardROIHeads):
     def __init__(self, cfg, input_shape):
@@ -14,7 +15,7 @@ class RAVROIHeads(StandardROIHeads):
                          box_predictor=RAVOutputLayer(cfg, self.predictor_input_shape(cfg, input_shape)))
 
     # calculate input shape of box_predictor
-    # parameters: input_shape - input shape for RoI Heads
+    # params - input_shape: input shape for RoIHeads
     def predictor_input_shape(self, cfg, input_shape):
         # build input_shape of box_predictor
         in_features = cfg.MODEL.ROI_HEADS.IN_FEATURES
@@ -50,5 +51,6 @@ class RAVROIHeads(StandardROIHeads):
 
     def _forward_box(self, features: Dict[str, torch.Tensor], proposals: List[Instances]):
         num_instances = [len(x.proposal_boxes) for x in proposals]
+        # pass number of instances in each image to RAVNet
         self.box_predictor.rav_net.pass_hint(num_instances)
         return super()._forward_box(features, proposals)

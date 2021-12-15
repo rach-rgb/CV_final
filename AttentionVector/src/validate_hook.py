@@ -6,8 +6,8 @@ from detectron2.engine import HookBase
 from detectron2.utils.logger import log_every_n_seconds
 
 
-# Validation Hook
-# source: https://gist.github.com/ortegatron/c0dad15e49c2b74de8bb09a5615d9f6b#file-lossevalhook-py
+# Validation Calculating Hook
+# edit source from: https://gist.github.com/ortegatron/c0dad15e49c2b74de8bb09a5615d9f6b#file-lossevalhook-py
 class LossEvalHook(HookBase):
     def __init__(self, eval_period, model, data_loader, size):
         self._model = model
@@ -16,8 +16,9 @@ class LossEvalHook(HookBase):
         self._iter = cycle(self._data_loader)
         self._size = size
 
+    # calculate validation error for subset of validation set.
+    # size of subset equals self._size
     def _do_loss_eval(self):
-        # Copying inference_on_dataset from evaluator.py
         total = len(self._data_loader)
         num_warmup = min(5, total - 1)
 
@@ -25,7 +26,6 @@ class LossEvalHook(HookBase):
         total_compute_time = 0
         losses = []
 
-        # for idx, inputs in enumerate(self._data_loader):
         for idx in range(0, self._size):
             inputs = next(self._iter)
 
@@ -57,7 +57,6 @@ class LossEvalHook(HookBase):
         return losses
 
     def _get_loss(self, data):
-        # How loss is calculated on train_loop
         metrics_dict = self._model(data)
         metrics_dict = {
             k: v.detach().cpu().item() if isinstance(v, torch.Tensor) else float(v)

@@ -4,11 +4,10 @@ from detectron2.layers import ShapeSpec
 from detectron2.config import configurable
 from detectron2.modeling import FastRCNNOutputLayers
 
-from cross_net import CrossNet
-from rav_net_expr import RAVNet_expr
 from rav_net import RAVNet
 
 
+# OutputLayer with RAVNet
 class RAVOutputLayer(FastRCNNOutputLayers):
     @configurable
     def __init__(self, input_shape: ShapeSpec, *, box2box_transform, num_classes: int, test_score_thresh: float = 0.0,
@@ -26,6 +25,6 @@ class RAVOutputLayer(FastRCNNOutputLayers):
         if x.dim() > 2:
             x = torch.flatten(x, start_dim=1)
         scores = self.cls_score(x)
-        scores = scores + self.rav_net(scores)
+        scores = scores + self.rav_net(scores)  # add attention vector to scores
         proposal_deltas = self.bbox_pred(x)
         return scores, proposal_deltas

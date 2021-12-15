@@ -8,7 +8,7 @@ from validate_hook import LossEvalHook
 from relevance_loader import get_rel_classes
 
 
-# Trainer for fine tune
+# Fine Tuning Trainer
 class TuningTrainer(DefaultTrainer):
     @classmethod
     def build_model(cls, cfg):
@@ -31,7 +31,7 @@ class TuningTrainer(DefaultTrainer):
 
     def build_hooks(self):
         hooks = super().build_hooks()
-        del hooks[4]  # delete predefined loss hook
+        del hooks[4]  # delete predefined validation hook
         hooks.insert(-1, LossEvalHook(
             self.cfg.TEST.EVAL_PERIOD,
             self.model,
@@ -59,16 +59,16 @@ class TuningTrainer(DefaultTrainer):
                 nn.init.normal_(self.model.roi_heads.box_predictor.bbox_pred.weight, std=0.01)
 
 
-# Custom Trainer
+# Fine Tuning Trainer for RAVNet
 class RelevanceTrainer(TuningTrainer):
     @classmethod
     def build_model(cls, cfg):
         model = super().build_model(cfg)
 
-        # build relevance matrix from train data
-        if model.roi_heads.box_predictor.cross_net.prior_rel[0][1] == 0:
+        # calculate class relevance information
+        if model.roi_heads.box_predictor.rav_net.prior_rel[0][1] == 0:
             rel = get_rel_classes(cfg)
-            model.roi_heads.box_predictor.cross_net.set_rel(rel)
+            model.roi_heads.box_predictor.rav_net.set_rel(rel)
 
         # freeze backbone and proposal net
         for param in model.backbone.parameters():

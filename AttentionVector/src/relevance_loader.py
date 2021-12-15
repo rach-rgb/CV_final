@@ -7,7 +7,8 @@ from detectron2.data import (
 )
 
 
-# modified get_detection_dataset_dicts
+# class relevancy calculation functions
+# remove unnecessary part from get_detection_dataset_dicts
 def light_detection_datasets_dict(dataset_names, proposal_files=None):
     assert len(dataset_names)
     dataset_dicts = [DatasetCatalog.get(dataset_name) for dataset_name in dataset_names]
@@ -34,6 +35,7 @@ def light_detection_datasets_dict(dataset_names, proposal_files=None):
     return dataset_dicts
 
 
+# calculate class relevance information
 def get_rel_classes(cfg):
     dataset_dicts = light_detection_datasets_dict(
         cfg.DATASETS.TRAIN,

@@ -1,10 +1,8 @@
-# source: https://gist.github.com/ortegatron/c0dad15e49c2b74de8bb09a5615d9f6b#file-lossevalhook-py
 import json
 import matplotlib.pyplot as plt
 
-input_path = '../output'
 
-
+# load metrics file
 def load_json_arr(json_path):
     lines = []
     with open(json_path, 'r') as f:
@@ -13,7 +11,9 @@ def load_json_arr(json_path):
     return lines
 
 
-def run():
+# plot train loss and validation loss
+# edit source from: https://gist.github.com/ortegatron/c0dad15e49c2b74de8bb09a5615d9f6b#file-lossevalhook-py
+def run(input_path):
     experiment_metrics = load_json_arr(input_path + '/metrics.json')
 
     plt.plot(
@@ -26,6 +26,8 @@ def run():
     plt.show()
 
     experiment_metrics.reverse()
+
+    # print each loss at last checkpoint
     for value in experiment_metrics:
         if 'total_loss' in value:
             print(value['iteration'], value['total_loss'])
@@ -38,4 +40,4 @@ def run():
 
 
 if __name__ == '__main__':
-    run()
+    run('../output')
