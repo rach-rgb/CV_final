@@ -3,9 +3,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-class CrossNet(nn.Module):
+class RAVNet(nn.Module):
     def __init__(self, num_classes, d_k=64):
-        super(CrossNet, self).__init__()
+        super(RAVNet, self).__init__()
         self.num_instances = None
 
         self.prior_rel = nn.Parameter(torch.zeros(81, 81), requires_grad=False)
@@ -45,7 +45,7 @@ class CrossNet(nn.Module):
         out = torch.matmul(out, v)
 
         # unpack
-        out = torch.sigmoid(self.unpack_fc(out))
+        out = self.unpack_fc(out)
 
         out = out.view(-1, out.size(2))
         d = max(self.num_instances)

@@ -4,14 +4,14 @@ from detectron2.layers import ShapeSpec
 from detectron2.structures import Instances
 from detectron2.modeling import ROI_HEADS_REGISTRY, StandardROIHeads
 
-from cross_output_layers import CrossOutputLayer
+from rav_output_layers import RAVOutputLayer
 
 
 @ROI_HEADS_REGISTRY.register()
-class CrossROIHeads(StandardROIHeads):
+class RAVROIHeads(StandardROIHeads):
     def __init__(self, cfg, input_shape):
         super().__init__(cfg, input_shape,
-                         box_predictor=CrossOutputLayer(cfg, self.predictor_input_shape(cfg, input_shape)))
+                         box_predictor=RAVOutputLayer(cfg, self.predictor_input_shape(cfg, input_shape)))
 
     # calculate input shape of box_predictor
     # parameters: input_shape - input shape for RoI Heads
@@ -50,5 +50,5 @@ class CrossROIHeads(StandardROIHeads):
 
     def _forward_box(self, features: Dict[str, torch.Tensor], proposals: List[Instances]):
         num_instances = [len(x.proposal_boxes) for x in proposals]
-        self.box_predictor.cross_net.pass_hint(num_instances)
+        self.box_predictor.rav_net.pass_hint(num_instances)
         return super()._forward_box(features, proposals)
